@@ -2,7 +2,6 @@ import reset from 'styled-reset';
 import { createGlobalStyle } from './typed-components';
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css?family=Maven+Pro&display=swap');
   ${reset}
   * {
     box-sizing:border-box;
