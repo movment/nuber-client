@@ -5,7 +5,7 @@ import AddPlace from '../../Routes/AddPlace';
 import EditAccount from '../../Routes/EditAccount';
 import FindAddress from '../../Routes/FindAddress';
 import Home from '../../Routes/Home';
-import OutHome from '../../Routes/OutHome';
+import Login from '../../Routes/Login';
 import PhoneLogin from '../../Routes/PhoneLogin';
 import Places from '../../Routes/Places';
 import Ride from '../../Routes/Ride';
@@ -41,7 +41,7 @@ const LoggedInRoutes: React.SFC = () => {
 const LoggedOutRoutes: React.SFC = () => {
   return (
     <Switch>
-      <Route path="/" component={OutHome} exact />
+      <Route path="/" component={Login} exact />
       <Route path="/phone-login" component={PhoneLogin} />
       <Route path="/verify-phone" component={VerifyPhone} />
       <Route path="/social-login" component={SocialLogin} />
