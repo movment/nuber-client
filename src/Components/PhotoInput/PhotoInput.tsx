@@ -46,7 +46,7 @@ const PhotoInput: React.SFC<IProps> = ({ uploading, fileUrl, onChange }) => (
           ⏰
         </span>
       )}
-      {!uploading && <img src={fileUrl} />}
+      {!uploading && <img src={fileUrl} alt="Profile" />}
     </Image>
   </Container>
 );
