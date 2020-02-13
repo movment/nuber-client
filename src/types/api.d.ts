@@ -3,6 +3,24 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: toggleDriving
+// ====================================================
+
+export interface toggleDriving_ToggleDrivingMode {
+  __typename: "ToggleDrivingModeResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface toggleDriving {
+  ToggleDrivingMode: toggleDriving_ToggleDrivingMode;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: startPhoneVerification
 // ====================================================
 
@@ -68,6 +86,32 @@ export interface verifyPhone {
 export interface verifyPhoneVariables {
   key: string;
   phoneNumber: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: userProfile
+// ====================================================
+
+export interface userProfile_GetMyProfile_user {
+  __typename: "User";
+  profilePhoto: string | null;
+  fullName: string | null;
+  isDriving: boolean;
+}
+
+export interface userProfile_GetMyProfile {
+  __typename: "GetMyProfileResponse";
+  ok: boolean;
+  error: string | null;
+  user: userProfile_GetMyProfile_user | null;
+}
+
+export interface userProfile {
+  GetMyProfile: userProfile_GetMyProfile;
 }
 
 /* tslint:disable */
