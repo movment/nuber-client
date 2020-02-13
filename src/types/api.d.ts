@@ -7,7 +7,7 @@
 // ====================================================
 
 export interface toggleDriving_ToggleDrivingMode {
-  __typename: "ToggleDrivingModeResponse";
+  __typename: 'ToggleDrivingModeResponse';
   ok: boolean;
   error: string | null;
 }
@@ -25,7 +25,7 @@ export interface toggleDriving {
 // ====================================================
 
 export interface updateProfile_UpdateMyProfile {
-  __typename: "UpdateMyProfileResponse";
+  __typename: 'UpdateMyProfileResponse';
   ok: boolean;
   error: string | null;
 }
@@ -50,7 +50,7 @@ export interface updateProfileVariables {
 // ====================================================
 
 export interface startPhoneVerification_StartPhoneVerification {
-  __typename: "StartPhoneVerificationResponse";
+  __typename: 'StartPhoneVerificationResponse';
   ok: boolean;
   error: string | null;
 }
@@ -72,7 +72,7 @@ export interface startPhoneVerificationVariables {
 // ====================================================
 
 export interface facebookConnect_FacebookConnect {
-  __typename: "FacebookConnectResponse";
+  __typename: 'FacebookConnectResponse';
   ok: boolean;
   error: string | null;
   token: string | null;
@@ -98,7 +98,7 @@ export interface facebookConnectVariables {
 // ====================================================
 
 export interface verifyPhone_CompletePhoneVerification {
-  __typename: "CompletePhoneVerificationResponse";
+  __typename: 'CompletePhoneVerificationResponse';
   ok: boolean;
   error: string | null;
   token: string | null;
@@ -122,7 +122,7 @@ export interface verifyPhoneVariables {
 // ====================================================
 
 export interface userProfile_GetMyProfile_user {
-  __typename: "User";
+  __typename: 'User';
   profilePhoto: string | null;
   fullName: string | null;
   firstName: string;
@@ -132,7 +132,7 @@ export interface userProfile_GetMyProfile_user {
 }
 
 export interface userProfile_GetMyProfile {
-  __typename: "GetMyProfileResponse";
+  __typename: 'GetMyProfileResponse';
   ok: boolean;
   error: string | null;
   user: userProfile_GetMyProfile_user | null;
@@ -140,6 +140,33 @@ export interface userProfile_GetMyProfile {
 
 export interface userProfile {
   GetMyProfile: userProfile_GetMyProfile;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getPlaces
+// ====================================================
+
+export interface getPlaces_GetMyPlaces_places {
+  __typename: 'Place';
+  id: number;
+  name: string;
+  address: string;
+  isFav: boolean;
+}
+
+export interface getPlaces_GetMyPlaces {
+  __typename: 'GetMyPlacesResponse';
+  ok: boolean;
+  error: string | null;
+  places: (getPlaces_GetMyPlaces_places | null)[] | null;
+}
+
+export interface getPlaces {
+  GetMyPlaces: getPlaces_GetMyPlaces;
 }
 
 /* tslint:disable */
