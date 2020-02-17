@@ -95,6 +95,28 @@ export interface updateProfileVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: reportMovement
+// ====================================================
+
+export interface reportMovement_ReportMovment {
+  __typename: "ReportMovmentResponse";
+  ok: boolean;
+}
+
+export interface reportMovement {
+  ReportMovment: reportMovement_ReportMovment;
+}
+
+export interface reportMovementVariables {
+  lat: number;
+  lng: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: startPhoneVerification
 // ====================================================
 
