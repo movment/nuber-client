@@ -117,6 +117,67 @@ export interface reportMovementVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getDrivers
+// ====================================================
+
+export interface getDrivers_GetNearybyDrivers_drivers {
+  __typename: "User";
+  id: number;
+  lastLat: number | null;
+  lastLng: number | null;
+}
+
+export interface getDrivers_GetNearybyDrivers {
+  __typename: "GetNearybyDriversResponse";
+  ok: boolean;
+  drivers: (getDrivers_GetNearybyDrivers_drivers | null)[] | null;
+}
+
+export interface getDrivers {
+  GetNearybyDrivers: getDrivers_GetNearybyDrivers;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: requestRide
+// ====================================================
+
+export interface requestRide_RequestRide_ride {
+  __typename: "Ride";
+  id: number;
+}
+
+export interface requestRide_RequestRide {
+  __typename: "RequestRideResponse";
+  ok: boolean;
+  error: string | null;
+  ride: requestRide_RequestRide_ride | null;
+}
+
+export interface requestRide {
+  RequestRide: requestRide_RequestRide;
+}
+
+export interface requestRideVariables {
+  pickUpAddress: string;
+  pickUpLat: number;
+  pickUpLng: number;
+  dropOffAddress: string;
+  dropOffLat: number;
+  dropOffLng: number;
+  price: number;
+  distance: string;
+  duration: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: startPhoneVerification
 // ====================================================
 

@@ -1,17 +1,24 @@
 import React from 'react';
-import { graphql, MutationFn, Query } from 'react-apollo';
+import { graphql, Mutation, MutationFn, Query } from 'react-apollo';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { geoCode } from '../../mapHelpers';
+import { geoCode, reverseGeoCode } from '../../mapHelpers';
 import { USER_PROFILE } from '../../sharedQueries';
 import {
+  getDrivers,
   reportMovement,
   reportMovementVariables,
+  requestRide,
+  requestRideVariables,
   userProfile,
 } from '../../types/api';
 import HomePresenter from './HomePresenter';
-import { REPORT_LOCATION } from './HomeQueries';
+import {
+  GET_NEARBY_DRIVERS,
+  REPORT_LOCATION,
+  REQUEST_RIDE,
+} from './HomeQueries';
 
 interface IState {
   isMenuOpen: boolean;
@@ -23,6 +30,7 @@ interface IState {
   distance: string;
   duration?: string;
   price?: string;
+  fromAddress: string;
 }
 
 interface IProps extends RouteComponentProps<any> {
@@ -31,6 +39,8 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 class ProfileQuery extends Query<userProfile> {}
+class NearbyQueries extends Query<getDrivers> {}
+class RequestRideMutation extends Mutation<requestRide, requestRideVariables> {}
 
 class HomeContainer extends React.Component<IProps, IState> {
   public mapRef: any;
@@ -38,20 +48,24 @@ class HomeContainer extends React.Component<IProps, IState> {
   public userMarker: any;
   public toMarker: any;
   public directions: any;
+  public drivers: any[];
   public state = {
     distance: '',
     duration: undefined,
+    fromAddress: '',
     isMenuOpen: false,
     lat: 0,
     lng: 0,
     price: undefined,
-    toAddress: 'ASeolleung, Yeoksam-dong, Seoul, South Korea',
+    toAddress:
+      'Athens International Airport (ATH), Attiki Odos, Spata Artemida 190 04, Greece',
     toLat: 0,
     toLng: 0,
   };
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
+    this.drivers = [];
   }
   public componentDidMount() {
     navigator.geolocation.getCurrentPosition(
@@ -60,20 +74,65 @@ class HomeContainer extends React.Component<IProps, IState> {
     );
   }
   public render() {
-    const { isMenuOpen, toAddress, price } = this.state;
+    const {
+      isMenuOpen,
+      toAddress,
+      price,
+      distance,
+      fromAddress,
+      lat,
+      lng,
+      toLat,
+      toLng,
+      duration,
+    } = this.state;
     return (
       <ProfileQuery query={USER_PROFILE}>
-        {({ loading }) => (
-          <HomePresenter
-            loading={loading}
-            isMenuOpen={isMenuOpen}
-            toggleMenu={this.toggleMenu}
-            mapRef={this.mapRef}
-            toAddress={toAddress}
-            onInputChange={this.onInputChange}
-            price={price}
-            onAddressSubmit={this.onAddressSubmit}
-          />
+        {({ data, loading }) => (
+          <NearbyQueries
+            query={GET_NEARBY_DRIVERS}
+            pollInterval={1000}
+            skip={
+              (data &&
+                data.GetMyProfile &&
+                data.GetMyProfile.user &&
+                data.GetMyProfile.user.isDriving) ||
+              false
+            }
+            onCompleted={this.handleNearbyDrivers}
+          >
+            {() => (
+              <RequestRideMutation
+                mutation={REQUEST_RIDE}
+                variables={{
+                  distance,
+                  dropOffAddress: toAddress,
+                  dropOffLat: toLat,
+                  dropOffLng: toLng,
+                  duration: duration || '',
+                  pickUpAddress: fromAddress,
+                  pickUpLat: lat,
+                  pickUpLng: lng,
+                  price: price || 0,
+                }}
+              >
+                {(requestRideFn) => (
+                  <HomePresenter
+                    loading={loading}
+                    isMenuOpen={isMenuOpen}
+                    toggleMenu={this.toggleMenu}
+                    mapRef={this.mapRef}
+                    toAddress={toAddress}
+                    onInputChange={this.onInputChange}
+                    price={price}
+                    data={data}
+                    onAddressSubmit={this.onAddressSubmit}
+                    requestRideFn={requestRideFn}
+                  />
+                )}
+              </RequestRideMutation>
+            )}
+          </NearbyQueries>
         )}
       </ProfileQuery>
     );
@@ -93,12 +152,25 @@ class HomeContainer extends React.Component<IProps, IState> {
       lat: latitude,
       lng: longitude,
     });
+    this.getFromAdress(latitude, longitude);
     this.loadMap(latitude, longitude);
+  };
+  public getFromAdress = async (lat: number, lng: number) => {
+    const address = await reverseGeoCode(lat, lng);
+    if (address) {
+      this.setState({
+        fromAddress: address,
+      });
+    }
   };
   public loadMap = (lat, lng) => {
     const { google } = this.props;
     const maps = google.maps;
     const mapNode = ReactDOM.findDOMNode(this.mapRef.current);
+    if (!mapNode) {
+      this.loadMap(lat, lng);
+      return;
+    }
     const mapConfig: google.maps.MapOptions = {
       center: {
         lat,
@@ -207,7 +279,7 @@ class HomeContainer extends React.Component<IProps, IState> {
     const directionsOptions: google.maps.DirectionsRequest = {
       destination: to,
       origin: from,
-      travelMode: google.maps.TravelMode.TRANSIT,
+      travelMode: google.maps.TravelMode.DRIVING,
     };
     directionsService.route(directionsOptions, this.handleRouteRequest);
   };
@@ -231,7 +303,7 @@ class HomeContainer extends React.Component<IProps, IState> {
         this.setPrice,
       );
     } else {
-      toast.error('There is no route there, you have to run');
+      toast.error('There is no route there, you have to swim ');
     }
   };
   public setPrice = () => {
@@ -240,6 +312,51 @@ class HomeContainer extends React.Component<IProps, IState> {
       this.setState({
         price: Number(parseFloat(distance.replace(',', '')) * 3).toFixed(2),
       });
+    }
+  };
+  public handleNearbyDrivers = (data: {} | getDrivers) => {
+    if ('GetNearybyDrivers' in data) {
+      const {
+        GetNearybyDrivers: { drivers, ok },
+      } = data;
+      if (ok && drivers) {
+        for (const driver of drivers) {
+          if (driver && driver.lastLat && driver.lastLng) {
+            const exisitingDriver:
+              | google.maps.Marker
+              | undefined = this.drivers.find(
+              (driverMarker: google.maps.Marker) => {
+                const markerID = driverMarker.get('ID');
+                return markerID === driver.id;
+              },
+            );
+            if (exisitingDriver) {
+              exisitingDriver.setPosition({
+                lat: driver.lastLat,
+                lng: driver.lastLng,
+              });
+              exisitingDriver.setMap(this.map);
+            } else {
+              const markerOptions: google.maps.MarkerOptions = {
+                icon: {
+                  path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                  scale: 5,
+                },
+                position: {
+                  lat: driver.lastLat,
+                  lng: driver.lastLng,
+                },
+              };
+              const newMarker: google.maps.Marker = new google.maps.Marker(
+                markerOptions,
+              );
+              this.drivers.push(newMarker);
+              newMarker.set('ID', driver.id);
+              newMarker.setMap(this.map);
+            }
+          }
+        }
+      }
     }
   };
 }
